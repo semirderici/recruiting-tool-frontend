@@ -16,6 +16,9 @@ import {
   Building2,
   Menu,
   X,
+  CheckSquare,
+  CalendarClock,
+  Activity,
 } from "lucide-react";
 
 interface SidebarLayoutProps {
@@ -31,6 +34,9 @@ const navItems = [
   { name: "Erstellung", icon: FilePlus, href: "/erstellung" },
   { name: "Anonymisierung", icon: EyeOff, href: "/anonymisierung" },
   { name: "Exporte", icon: Download, href: "/exporte" },
+  { name: "Aufgaben", icon: CheckSquare, href: "/crm/tasks" },
+  { name: "Interviews", icon: CalendarClock, href: "/crm/interviews" },
+  { name: "Aktivitäten", icon: Activity, href: "/crm/activities" },
   { name: "Einstellungen", icon: Settings, href: "/einstellungen" },
 ];
 

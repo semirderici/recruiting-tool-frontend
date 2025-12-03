@@ -6,6 +6,9 @@ import { SidebarLayout } from "@/components/SidebarLayout";
 import { dummyCandidates } from "@/data/candidates";
 import { dummyJobs } from "@/data/jobs";
 import { dummyExports } from "@/data/exports";
+import { crmTasks } from "@/data/crmTasks";
+import { crmActivities } from "@/data/crmActivities";
+import { CrmActivityType } from "@/types/crm";
 import { ExportStatusBadge } from "@/components/ExportStatusBadge";
 import { ExportTypeChip } from "@/components/ExportTypeChip";
 import { DashboardCard } from "@/components/DashboardCard";
@@ -20,6 +23,14 @@ import {
   MapPin,
   FileSpreadsheet,
   FileText,
+  CalendarClock,
+  Activity,
+  Calendar,
+  Phone,
+  Mail,
+  MessageCircle,
+  Info,
+  Building2,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -46,6 +57,27 @@ export default function DashboardPage() {
     (e) => e.status === "fertig"
   ).length;
 
+  // CRM KPIs
+  const openTasksCount = crmTasks.filter(
+    (t) => t.status === "open" || t.status === "in_progress"
+  ).length;
+
+  const upcomingInterviewsCount = crmTasks.filter((t) => {
+    if (t.type !== "interview" || t.status === "completed") return false;
+    
+    const dueDate = new Date(t.dueDate);
+    const today = new Date();
+    // Reset times
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    const diffTime = dueDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Include today and next 7 days
+    return diffDays >= 0 && diffDays <= 7;
+  }).length;
+
   // Recent Candidates
   const recentCandidates = dummyCandidates.slice(0, 5);
 
@@ -55,6 +87,39 @@ export default function DashboardPage() {
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
     .slice(0, 5);
+
+  // Recent Activities
+  const recentActivities = [...crmActivities]
+    .sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 5);
+
+  // Helper for Activity Icons (simplified version of the full page)
+  const getActivityIcon = (type: CrmActivityType) => {
+    const className = "h-4 w-4";
+    switch (type) {
+      case "task": return <CheckCircle2 className={className} />;
+      case "interview": return <Calendar className={className} />;
+      case "call": return <Phone className={className} />;
+      case "email": return <Mail className={className} />;
+      case "note": return <MessageCircle className={className} />;
+      case "system": return <Activity className={className} />;
+      default: return <Info className={className} />;
+    }
+  };
+
+  const getActivityColorClass = (type: CrmActivityType) => {
+    switch (type) {
+      case "task": return "bg-blue-100 text-blue-600";
+      case "interview": return "bg-purple-100 text-purple-600";
+      case "call": return "bg-green-100 text-green-600";
+      case "email": return "bg-yellow-100 text-yellow-600";
+      case "note": return "bg-orange-100 text-orange-600";
+      case "system": return "bg-gray-100 text-gray-600";
+      default: return "bg-gray-100 text-gray-600";
+    }
+  };
 
   return (
     <SidebarLayout>
@@ -157,6 +222,54 @@ export default function DashboardPage() {
                 className="text-sm font-medium text-green-600 hover:text-green-800"
               >
                 Zu Exporten &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Open Tasks KPI */}
+          <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 text-orange-600">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+            <div className="text-3xl font-bold text-gray-900">
+              {openTasksCount}
+            </div>
+            <div className="text-sm font-medium text-gray-900">
+              Offene Aufgaben
+            </div>
+            <div className="text-xs text-gray-500">
+              Inkl. "In Arbeit"
+            </div>
+            <div className="mt-auto pt-4">
+              <Link
+                href="/crm/tasks"
+                className="text-sm font-medium text-orange-600 hover:text-orange-800"
+              >
+                Zu Aufgaben &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Upcoming Interviews KPI */}
+          <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-sky-600">
+              <CalendarClock className="h-6 w-6" />
+            </div>
+            <div className="text-3xl font-bold text-gray-900">
+              {upcomingInterviewsCount}
+            </div>
+            <div className="text-sm font-medium text-gray-900">
+              Anstehende Interviews
+            </div>
+            <div className="text-xs text-gray-500">
+              In den nächsten 7 Tagen
+            </div>
+            <div className="mt-auto pt-4">
+              <Link
+                href="/crm/interviews"
+                className="text-sm font-medium text-sky-600 hover:text-sky-800"
+              >
+                Zu Interviews &rarr;
               </Link>
             </div>
           </div>
@@ -289,6 +402,74 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Latest Activities Section */}
+        <div className="mt-8 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Neueste Aktivitäten
+              </h2>
+              <p className="text-xs text-gray-500">
+                Letzte 5 Aktivitäten aus Aufgaben, Interviews, Calls & Co.
+              </p>
+            </div>
+            <Link
+              href="/crm/activities"
+              className="text-sm font-medium text-blue-600 hover:text-blue-800"
+            >
+              Alle Aktivitäten
+            </Link>
+          </div>
+          <div className="p-4">
+            {recentActivities.length > 0 ? (
+              <ul className="flex flex-col gap-4">
+                {recentActivities.map((activity) => (
+                  <li key={activity.id} className="flex items-start gap-3">
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${getActivityColorClass(
+                        activity.type
+                      )}`}
+                    >
+                      {getActivityIcon(activity.type)}
+                    </div>
+                    <div className="flex flex-1 flex-col gap-0.5">
+                      <div className="flex items-start justify-between">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {activity.title}
+                        </span>
+                        <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                          {new Date(activity.createdAt).toLocaleString("de-DE", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500 flex flex-wrap items-center gap-2">
+                        {activity.relatedToName && (
+                          <span className="inline-flex items-center gap-1">
+                            {activity.relatedToType === "candidate" && <Users className="h-3 w-3" />}
+                            {activity.relatedToType === "job" && <Briefcase className="h-3 w-3" />}
+                            {activity.relatedToType === "company" && <Building2 className="h-3 w-3" />}
+                            {activity.relatedToName}
+                          </span>
+                        )}
+                        <span className="h-1 w-1 rounded-full bg-gray-300" />
+                        <span>Von: {activity.actor}</span>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="py-6 text-center text-sm text-gray-500">
+                Noch keine Aktivitäten vorhanden.
+              </div>
+            )}
           </div>
         </div>
       </div>

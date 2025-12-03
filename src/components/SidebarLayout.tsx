@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -14,6 +14,8 @@ import {
   Settings,
   User,
   Building2,
+  Menu,
+  X,
 } from "lucide-react";
 
 interface SidebarLayoutProps {
@@ -34,16 +36,36 @@ const navItems = [
 
 export function SidebarLayout({ children }: SidebarLayoutProps) {
   const pathname = usePathname();
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-full bg-gray-50 text-gray-900">
+      {/* Mobile Overlay */}
+      <div
+        className={`fixed inset-0 z-20 bg-black/50 lg:hidden transition-opacity ${
+          isMobileNavOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsMobileNavOpen(false)}
+      />
+
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-10 w-64 flex-col border-r border-gray-200 bg-white flex">
+      <aside
+        className={`fixed inset-y-0 left-0 z-30 w-64 flex-col border-r border-gray-200 bg-white flex transition-transform duration-300 lg:translate-x-0 ${
+          isMobileNavOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         {/* Logo Area */}
-        <div className="flex h-16 items-center border-b border-gray-100 px-6">
+        <div className="flex h-16 items-center justify-between border-b border-gray-100 px-6">
           <span className="text-xl font-bold tracking-tight text-blue-600">
             AITONOM Recruit
           </span>
+          {/* Close Button for Mobile */}
+          <button
+            onClick={() => setIsMobileNavOpen(false)}
+            className="lg:hidden text-gray-500 hover:text-gray-700"
+          >
+            <X className="h-6 w-6" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -61,6 +83,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 <li key={item.name}>
                   <Link
                     href={item.href}
+                    onClick={() => setIsMobileNavOpen(false)}
                     className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                       isActive
                         ? "bg-blue-50 text-blue-700"
@@ -92,8 +115,26 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
         </div>
       </aside>
 
+      {/* Mobile Topbar */}
+      <header className="fixed top-0 left-0 right-0 z-20 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 lg:hidden">
+        <button
+          type="button"
+          onClick={() => setIsMobileNavOpen(true)}
+          className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white p-2 text-gray-700 shadow-sm hover:bg-gray-50"
+          aria-label="Navigation öffnen"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <span className="text-sm font-semibold text-gray-900">
+          AITONOM Recruit
+        </span>
+        <div className="w-8" /> {/* Placeholder for centering */}
+      </header>
+
       {/* Main Content */}
-      <main className="ml-64 flex-1 overflow-y-auto p-8">{children}</main>
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 lg:ml-64 w-full pt-20 lg:pt-8">
+        {children}
+      </main>
     </div>
   );
 }

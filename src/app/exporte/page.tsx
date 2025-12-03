@@ -53,7 +53,7 @@ export default function ExportsPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-10 grid gap-6 md:grid-cols-3">
+        <div className="mb-10 grid gap-6 grid-cols-1 md:grid-cols-3">
           <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md cursor-pointer hover:border-blue-300">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
               <Users className="h-6 w-6" />

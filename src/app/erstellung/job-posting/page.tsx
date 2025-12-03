@@ -48,8 +48,8 @@ export default function JobPostingCreationPage() {
         </div>
 
         {/* Stepper */}
-        <div className="mb-10">
-          <div className="relative flex items-center justify-between">
+        <div className="mb-10 overflow-x-auto pb-4">
+          <div className="relative flex min-w-[320px] items-center justify-between px-2">
             <div className="absolute left-0 top-1/2 -z-10 h-0.5 w-full -translate-y-1/2 bg-gray-200" />
 
             {/* Step 1 */}
@@ -316,16 +316,16 @@ export default function JobPostingCreationPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between border-t border-gray-100 pt-6">
+              <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-between">
                 <button
                   onClick={() => setStep(1)}
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center justify-center sm:justify-start"
                 >
                   Zurück zur Eingabe
                 </button>
                 <button
                   onClick={() => setStep(3)}
-                  className="inline-flex items-center gap-2 rounded-md bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                  className="inline-flex items-center justify-center gap-2 rounded-md bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 >
                   Weiter zum Feinschliff
                   <ChevronRight className="h-4 w-4" />
@@ -389,14 +389,14 @@ export default function JobPostingCreationPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between border-t border-gray-100 pt-6">
+              <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-between">
                 <button
                   onClick={() => setStep(2)}
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center justify-center sm:justify-start"
                 >
                   Zurück zum Entwurf
                 </button>
-                <button className="inline-flex items-center gap-2 rounded-md bg-green-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                <button className="inline-flex items-center justify-center gap-2 rounded-md bg-green-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                   Speichern & Veröffentlichen
                   <CheckCircle className="h-4 w-4" />
                 </button>

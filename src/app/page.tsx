@@ -162,26 +162,24 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Trends & Charts Section */}
-        <section className="mb-8 space-y-4">
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">Trends & Entwicklung</h2>
-            <p className="text-sm text-gray-500">Visuelle Übersicht zu Kandidaten, Jobs und Match-Scores.</p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        {/* Charts */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+          <div className="h-96 w-full">
             <DashboardCard title="Kandidaten pro Monat" subtitle="Entwicklung der angelegten Profile">
               <CandidatesTrendChart />
             </DashboardCard>
+          </div>
+          <div className="h-96 w-full">
             <DashboardCard title="Jobs nach Status" subtitle="Verteilung der aktuellen Ausschreibungen">
               <JobsByStatusChart />
             </DashboardCard>
           </div>
-        </section>
+        </div>
 
         {/* Lists Grid */}
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Recent Candidates List */}
-          <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <h2 className="text-lg font-semibold text-gray-900">
                 Neueste Kandidaten
@@ -238,7 +236,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent Exports List */}
-          <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <h2 className="text-lg font-semibold text-gray-900">
                 Letzte Exporte

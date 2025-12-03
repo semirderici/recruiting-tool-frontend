@@ -31,7 +31,7 @@ export default async function CompanyDetailPage({
             Zurück zur Liste
           </Link>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-gray-900">

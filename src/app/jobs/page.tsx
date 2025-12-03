@@ -41,14 +41,14 @@ export default function JobsPage() {
     <SidebarLayout>
       <div className="mx-auto max-w-7xl">
         {/* Page Header */}
-        <div className="mb-8 flex items-end justify-between">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Jobs & Firmen</h1>
             <p className="mt-1 text-sm text-gray-500">
               Verwalte und filtere alle Jobprofile und Firmen
             </p>
           </div>
-          <button className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          <button className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             <Plus className="h-4 w-4" />
             Job hinzufügen
           </button>

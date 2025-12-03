@@ -31,7 +31,7 @@ export default async function CandidateDetailPage({
             Zurück zur Liste
           </Link>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-2xl font-bold text-gray-600">
                 {candidate.name

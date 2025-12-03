@@ -13,6 +13,7 @@ import {
   Download,
   Settings,
   User,
+  Building2,
 } from "lucide-react";
 
 interface SidebarLayoutProps {
@@ -22,7 +23,8 @@ interface SidebarLayoutProps {
 const navItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/" },
   { name: "Kandidaten", icon: Users, href: "/candidates" },
-  { name: "Jobs & Firmen", icon: Briefcase, href: "/jobs" },
+  { name: "Jobs", icon: Briefcase, href: "/jobs" },
+  { name: "Firmen", icon: Building2, href: "/companies" },
   { name: "Research", icon: Search, href: "/research" },
   { name: "Erstellung", icon: FilePlus, href: "/erstellung" },
   { name: "Anonymisierung", icon: EyeOff, href: "/anonymisierung" },
@@ -49,10 +51,12 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           <ul className="space-y-1">
             {navItems.map((item) => {
               // Check for exact match or if it's a sub-route (except for root/hash links)
-              const isActive = 
-                item.href === pathname || 
-                (item.href !== "#" && item.href !== "/" && pathname.startsWith(item.href));
-                
+              const isActive =
+                item.href === pathname ||
+                (item.href !== "#" &&
+                  item.href !== "/" &&
+                  pathname.startsWith(item.href));
+
               return (
                 <li key={item.name}>
                   <Link
@@ -89,9 +93,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 flex-1 overflow-y-auto p-8">
-        {children}
-      </main>
+      <main className="ml-64 flex-1 overflow-y-auto p-8">{children}</main>
     </div>
   );
 }

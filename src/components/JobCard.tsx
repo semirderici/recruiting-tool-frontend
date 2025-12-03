@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Job } from "@/types/job";
 import { MapPin, Building2, ExternalLink } from "lucide-react";
 
@@ -32,7 +33,18 @@ export function JobCard({ job }: JobCardProps) {
       <div className="mb-4 space-y-1.5">
         <div className="flex items-center text-sm text-gray-600">
           <Building2 className="mr-2 h-4 w-4 text-gray-400" />
-          <span className="font-medium">{job.company}</span>
+          <span className="font-medium">
+            {job.companyId ? (
+              <Link
+                href={`/companies/${job.companyId}`}
+                className="hover:text-blue-600 hover:underline"
+              >
+                {job.company}
+              </Link>
+            ) : (
+              job.company
+            )}
+          </span>
         </div>
         <div className="flex items-center text-sm text-gray-500">
           <MapPin className="mr-2 h-4 w-4 text-gray-400" />
@@ -70,12 +82,13 @@ export function JobCard({ job }: JobCardProps) {
 
       {/* Footer / Action */}
       <div className="mt-auto flex justify-end">
-        <button className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700">
+        <Link
+          href={`/jobs/${job.id}`}
+          className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
+        >
           Details <ExternalLink className="ml-1 h-3 w-3" />
-        </button>
+        </Link>
       </div>
     </div>
   );
 }
-
-

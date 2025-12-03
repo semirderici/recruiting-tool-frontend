@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Candidate } from "@/types/candidate";
 import { MapPin, Mail, Phone, ExternalLink } from "lucide-react";
 
@@ -97,12 +98,13 @@ export function CandidateCard({ candidate }: CandidateCardProps) {
 
       {/* Footer / Action */}
       <div className="mt-auto flex justify-end">
-        <button className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700">
+        <Link
+          href={`/candidates/${candidate.id}`}
+          className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
+        >
           Details <ExternalLink className="ml-1 h-3 w-3" />
-        </button>
+        </Link>
       </div>
     </div>
   );
 }
-
-

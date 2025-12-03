@@ -6,6 +6,7 @@ export interface Job {
   id: string;
   title: string;
   company: string;
+  companyId?: string;
   location: string;
   type: JobType;
   status: JobStatus;
@@ -14,5 +15,3 @@ export interface Job {
   source: JobSource;
   tags: string[];
 }
-
-

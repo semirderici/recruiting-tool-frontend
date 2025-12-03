@@ -1,28 +1,42 @@
 import React from "react";
-import { ExportType } from "@/types/export";
-import { Users, Briefcase, FileText, BarChart3 } from "lucide-react";
+import type { ExportType } from "@/types/export";
 
 interface ExportTypeChipProps {
   type: ExportType;
+  className?: string;
 }
 
-const typeConfig: Record<ExportType, { label: string; icon: React.ElementType; className: string }> = {
-  kandidaten: { label: "Kandidaten", icon: Users, className: "bg-blue-100 text-blue-800" },
-  jobs: { label: "Jobs", icon: Briefcase, className: "bg-purple-100 text-purple-800" },
-  matching: { label: "Matching", icon: BarChart3, className: "bg-indigo-100 text-indigo-800" },
-  report: { label: "Report", icon: FileText, className: "bg-orange-100 text-orange-800" },
+const typeConfig: Record<ExportType, { label: string; colorClasses: string }> = {
+  kandidaten: {
+    label: "Kandidaten",
+    colorClasses: "bg-blue-100 text-blue-800",
+  },
+  jobs: {
+    label: "Jobs",
+    colorClasses: "bg-purple-100 text-purple-800",
+  },
+  matching: {
+    label: "Matching",
+    colorClasses: "bg-pink-100 text-pink-800",
+  },
+  report: {
+    label: "Report",
+    colorClasses: "bg-orange-100 text-orange-800",
+  },
 };
 
-export function ExportTypeChip({ type }: ExportTypeChipProps) {
-  const config = typeConfig[type] || { label: type, icon: FileText, className: "bg-gray-100 text-gray-800" };
-  const Icon = config.icon;
+export function ExportTypeChip({ type, className = "" }: ExportTypeChipProps) {
+  const config = typeConfig[type] || {
+    label: "Export",
+    colorClasses: "bg-gray-100 text-gray-800",
+  };
 
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${config.className}`}>
-      <Icon className="h-3.5 w-3.5" />
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${config.colorClasses} ${className}`}
+    >
       {config.label}
     </span>
   );
 }
-
 

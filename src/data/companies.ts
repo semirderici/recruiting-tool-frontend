@@ -1,0 +1,168 @@
+import { Company } from "@/types/company";
+
+export const dummyCompanies: Company[] = [
+  {
+    id: "1",
+    name: "TechCorp GmbH",
+    location: "Berlin, DE",
+    website: "https://techcorp.example.com",
+    industry: "Software & IT",
+    size: "50-200 Mitarbeiter",
+    description: "TechCorp ist ein führender Anbieter von SaaS-Lösungen im B2B-Bereich.",
+    status: "active",
+    tags: ["SaaS", "B2B", "Software"],
+    contacts: [
+      {
+        name: "Maria Musterfrau",
+        role: "Head of HR",
+        email: "maria.musterfrau@techcorp.de",
+        phone: "+49 30 123456",
+      },
+    ],
+    createdAt: "2023-01-15",
+  },
+  {
+    id: "2",
+    name: "CloudSystems",
+    location: "Remote",
+    website: "https://cloudsystems.io",
+    industry: "Cloud Infrastructure",
+    size: "10-50 Mitarbeiter",
+    description: "CloudSystems hilft Unternehmen bei der Migration in die Cloud.",
+    status: "active",
+    tags: ["Cloud", "Infrastructure", "Remote"],
+    contacts: [
+      {
+        name: "John Doe",
+        role: "CEO",
+        email: "john@cloudsystems.io",
+        phone: "+1 555 0123",
+      },
+    ],
+    createdAt: "2023-03-10",
+  },
+  {
+    id: "3",
+    name: "InnovateX",
+    location: "München, DE",
+    website: "https://innovatex.de",
+    industry: "Automotive",
+    size: "200-500 Mitarbeiter",
+    description: "InnovateX entwickelt die Mobilität der Zukunft.",
+    status: "prospect",
+    tags: ["Automotive", "Innovation", "Mobility"],
+    contacts: [
+      {
+        name: "Hans Schmidt",
+        role: "Recruiting Lead",
+        email: "h.schmidt@innovatex.de",
+        phone: "+49 89 987654",
+      },
+    ],
+    createdAt: "2022-11-05",
+  },
+  {
+    id: "4",
+    name: "AI Solutions",
+    location: "Hamburg, DE",
+    website: "https://ai-solutions.example.com",
+    industry: "Artificial Intelligence",
+    size: "50-100 Mitarbeiter",
+    description: "Wir entwickeln KI-Lösungen für den Mittelstand.",
+    status: "active",
+    tags: ["AI", "Machine Learning", "Data"],
+    contacts: [
+      {
+        name: "Dr. Lisa AI",
+        role: "CTO",
+        email: "lisa@ai-solutions.example.com",
+        phone: "+49 40 1234567",
+      },
+    ],
+    createdAt: "2023-05-20",
+  },
+  {
+    id: "5",
+    name: "CreativeAgency",
+    location: "Berlin, DE",
+    website: "https://creative.example.com",
+    industry: "Marketing & Design",
+    size: "10-50 Mitarbeiter",
+    description: "Award-winning Design Agentur in Berlin.",
+    status: "active",
+    tags: ["Design", "Marketing", "UX/UI"],
+    contacts: [
+      {
+        name: "Tom Designer",
+        role: "Creative Director",
+        email: "tom@creative.example.com",
+        phone: "+49 30 9876543",
+      },
+    ],
+    createdAt: "2023-02-15",
+  },
+  {
+    id: "6",
+    name: "FinTech AG",
+    location: "Frankfurt, DE",
+    website: "https://fintech.example.com",
+    industry: "Finance",
+    size: "500+ Mitarbeiter",
+    description: "Die Zukunft des Bankings.",
+    status: "active",
+    tags: ["Finance", "Banking", "FinTech"],
+    contacts: [
+      {
+        name: "Sarah Finance",
+        role: "HR Manager",
+        email: "sarah@fintech.example.com",
+        phone: "+49 69 1234567",
+      },
+    ],
+    createdAt: "2022-08-10",
+  },
+  {
+    id: "7",
+    name: "E-Com Start",
+    location: "Köln, DE",
+    website: "https://ecom-start.example.com",
+    industry: "E-Commerce",
+    size: "10-50 Mitarbeiter",
+    description: "Schnell wachsendes E-Commerce Startup.",
+    status: "prospect",
+    tags: ["E-Commerce", "Startup", "Retail"],
+    contacts: [
+      {
+        name: "Max Seller",
+        role: "Founder",
+        email: "max@ecom-start.example.com",
+        phone: "+49 221 1234567",
+      },
+    ],
+    createdAt: "2023-09-01",
+  },
+  {
+    id: "8",
+    name: "Insurance BigCorp",
+    location: "Stuttgart, DE",
+    website: "https://insurance.example.com",
+    industry: "Insurance",
+    size: "1000+ Mitarbeiter",
+    description: "Traditionsreicher Versicherer auf dem Weg der Digitalisierung.",
+    status: "inactive",
+    tags: ["Insurance", "Corporate", "Legacy"],
+    contacts: [
+      {
+        name: "Petra Policy",
+        role: "Recruiter",
+        email: "petra@insurance.example.com",
+        phone: "+49 711 1234567",
+      },
+    ],
+    createdAt: "2020-01-01",
+  },
+];
+
+export function getCompanyById(id: string) {
+  return dummyCompanies.find((c) => c.id === id);
+}

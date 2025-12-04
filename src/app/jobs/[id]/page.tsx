@@ -8,6 +8,8 @@ import { crmJobs } from "@/data/crmJobs";
 import { crmPipelineItems } from "@/data/crmPipeline";
 import { crmTasks } from "@/data/crmTasks";
 import { crmActivities } from "@/data/crmActivities";
+import { crmCandidates } from "@/data/crmCandidates";
+import { computeCandidateJobMatchScore } from "@/utils/matching";
 import {
   CrmJob,
   CrmTask,
@@ -24,7 +26,6 @@ import {
   FileText,
   Activity,
   ArrowLeft,
-  Tag,
   StickyNote,
   Sparkles,
 } from "lucide-react";
@@ -134,6 +135,36 @@ export default function JobDetailPage() {
       );
     return futureInterviews[0];
   }, [interviews]);
+
+  const matchingCandidates = useMemo(() => {
+    if (!job) return [];
+
+    return crmCandidates
+      .map((candidate) => {
+        const { score, sharedKeywords, locationMatch } =
+          computeCandidateJobMatchScore(
+            {
+              location: candidate.location,
+              tags: candidate.tags,
+              // skills not in CrmCandidate type
+            },
+            {
+              location: job.location,
+              tags: job.tags,
+              // skills not in CrmJob type
+            }
+          );
+
+        return {
+          candidate,
+          score,
+          sharedKeywords,
+          locationMatch,
+        };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+  }, [job]);
 
   if (!job) {
     return (
@@ -607,8 +638,18 @@ export default function JobDetailPage() {
                     </li>
                   </ul>
                 </div>
-                <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-500">
-                  Hier können Dokumente zum Job hochgeladen werden.
+                <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-500 flex flex-col justify-between">
+                  <p className="mb-4">Hier können Dokumente zum Job hochgeladen werden.</p>
+                  
+                  <div className="mt-auto border-t border-gray-200 pt-4">
+                    <p className="text-xs font-semibold text-gray-700 mb-2">Reports</p>
+                    <Link 
+                      href="/exporte"
+                      className="inline-flex items-center rounded-md bg-white border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                    >
+                      Matching-Report exportieren
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
@@ -616,47 +657,97 @@ export default function JobDetailPage() {
             {/* Matching */}
             {activeTab === "matching" && (
               <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <h3 className="text-sm font-semibold text-gray-900">Matching (Dummy)</h3>
-                <p className="mt-1 text-xs text-gray-500">
-                  Potenzielle Kandidaten aus dem Pool.
-                </p>
-                <div className="mt-4 overflow-hidden rounded-lg border border-gray-100">
-                  <table className="min-w-full divide-y divide-gray-100 text-sm">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Kandidat
-                        </th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Aktuelle Rolle
-                        </th>
-                        <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
-                          Score
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 bg-white">
-                      <tr>
-                        <td className="px-4 py-2 text-gray-900">Max Mustermann</td>
-                        <td className="px-4 py-2 text-gray-600">Frontend Dev</td>
-                        <td className="px-4 py-2">
-                          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                            92 %
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-2 text-gray-900">Lisa Schmidt</td>
-                        <td className="px-4 py-2 text-gray-600">Fullstack Dev</td>
-                        <td className="px-4 py-2">
-                          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                            85 %
-                          </span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-900">Passende Kandidaten</h3>
+                  <Link
+                    href={`/research/job-to-candidates?jobId=${job.id}`}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+                  >
+                    Job → Kandidaten (Research öffnen)
+                  </Link>
                 </div>
+                {matchingCandidates.length === 0 ? (
+                  <p className="text-sm text-gray-500">
+                    Es sind noch keine passenden Kandidaten im System hinterlegt.
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-left text-sm">
+                      <thead className="border-b border-gray-100 text-xs font-medium uppercase tracking-wide text-gray-500">
+                        <tr>
+                          <th className="py-2 pr-4">Kandidat</th>
+                          <th className="py-2 pr-4">Rolle</th>
+                          <th className="py-2 pr-4">Standort</th>
+                          <th className="py-2 pr-4">Score</th>
+                          <th className="py-2 pr-4">Überschneidungen</th>
+                          <th className="py-2 pl-4 text-right">Aktionen</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {matchingCandidates.map(
+                          ({ candidate, score, sharedKeywords, locationMatch }) => (
+                            <tr key={candidate.id}>
+                              <td className="py-2 pr-4">
+                                <div className="flex flex-col">
+                                  <span className="font-medium text-gray-900">
+                                    {candidate.name}
+                                  </span>
+                                  {candidate.status && (
+                                    <span className="text-xs text-gray-500">
+                                      Status: {candidate.status}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-2 pr-4 text-gray-700">
+                                {candidate.role}
+                              </td>
+                              <td className="py-2 pr-4 text-gray-700">
+                                {candidate.location}
+                                {locationMatch && (
+                                  <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+                                    Standort-Match
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-2 pr-4">
+                                <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                                  {score} %
+                                </span>
+                              </td>
+                              <td className="py-2 pr-4 text-xs text-gray-600">
+                                {sharedKeywords.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1">
+                                    {sharedKeywords.slice(0, 4).map((kw) => (
+                                      <span
+                                        key={kw}
+                                        className="rounded-full bg-gray-50 px-2 py-0.5 text-[11px] text-gray-600 ring-1 ring-gray-200"
+                                      >
+                                        {kw}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-400">
+                                    Keine Überschneidungen
+                                  </span>
+                                )}
+                              </td>
+                              <td className="py-2 pl-4 text-right">
+                                <a
+                                  href={`/candidates/${candidate.id}`}
+                                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                                >
+                                  Kandidat öffnen
+                                </a>
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
           </div>

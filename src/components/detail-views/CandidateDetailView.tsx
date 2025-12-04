@@ -230,3 +230,4 @@ export function CandidateDetailView({ candidate }: CandidateDetailViewProps) {
   );
 }
 
+

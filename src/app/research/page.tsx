@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { SidebarLayout } from "@/components/SidebarLayout";
-import { FileText, Briefcase, ArrowRight } from "lucide-react";
+import { UserSearch, Briefcase, ArrowRight } from "lucide-react";
 
 export default function ResearchPage() {
   return (
@@ -10,7 +12,7 @@ export default function ResearchPage() {
         <div className="mb-10 text-center sm:text-left">
           <h1 className="text-3xl font-bold text-gray-900">Research</h1>
           <p className="mt-2 text-lg text-gray-600">
-            Wähle aus, welche Art von Matching du starten möchtest.
+            KI-gestützte Suche nach passenden Jobs und Kandidaten.
           </p>
         </div>
 
@@ -18,26 +20,16 @@ export default function ResearchPage() {
           {/* Card 1: CV -> Jobs */}
           <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:shadow-md">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <FileText className="h-7 w-7" />
+              <UserSearch className="h-7 w-7" />
             </div>
             <h2 className="mb-3 text-2xl font-bold text-gray-900">CV → Jobs</h2>
-            <p className="mb-6 text-gray-600">
-              Lade einen Lebenslauf hoch und finde passende Jobangebote automatisch.
-            </p>
-            <ul className="mb-8 space-y-3 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                Automatische Profilanalyse
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                Matching-Score mit Begründung
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                Shortlist zum Export
-              </li>
-            </ul>
+            <div className="mb-6 flex-1 text-gray-600">
+              <ul className="list-inside list-disc space-y-2 text-sm">
+                <li>CV oder Profiltext eingeben.</li>
+                <li>Passende Jobs mit Matching-Score finden.</li>
+                <li>Treffer zu Jobdetail oder Export weiterleiten.</li>
+              </ul>
+            </div>
             <div className="mt-auto">
               <Link
                 href="/research/cv-to-jobs"
@@ -57,23 +49,13 @@ export default function ResearchPage() {
             <h2 className="mb-3 text-2xl font-bold text-gray-900">
               Job → Kandidaten
             </h2>
-            <p className="mb-6 text-gray-600">
-              Nutze eine Stellenanzeige und finde passende Kandidaten aus dem Pool.
-            </p>
-            <ul className="mb-8 space-y-3 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-                Stellenanalyse & Anforderungsprofil
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-                Ranking der Kandidaten
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-                Notizen & Status
-              </li>
-            </ul>
+            <div className="mb-6 flex-1 text-gray-600">
+              <ul className="list-inside list-disc space-y-2 text-sm">
+                <li>Job auswählen oder Jobtext einfügen.</li>
+                <li>Passende Kandidaten mit Score & Overlaps.</li>
+                <li>Direkt in Pipeline oder Exposé übernehmen (später).</li>
+              </ul>
+            </div>
             <div className="mt-auto">
               <Link
                 href="/research/job-to-candidates"
@@ -89,5 +71,3 @@ export default function ResearchPage() {
     </SidebarLayout>
   );
 }
-
-

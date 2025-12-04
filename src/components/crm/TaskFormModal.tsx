@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CrmTaskType, CrmTaskRelationType, CrmTaskPriority } from "@/types/crm";
 import { X, AlertCircle } from "lucide-react";
 
@@ -41,20 +41,13 @@ export function TaskFormModal({
   onClose,
   onSave,
 }: TaskFormModalProps) {
-  const [values, setValues] = useState<TaskFormValues>(defaultValues);
-  const [error, setError] = useState<string | null>(null);
+  const initialValues: TaskFormValues = {
+    ...defaultValues,
+    type: initialType || "general",
+  };
 
-  // Reset form when modal opens
-  useEffect(() => {
-    if (open) {
-      setValues({
-        ...defaultValues,
-        type: initialType || "general",
-      });
-      setError(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, initialType]);
+  const [values, setValues] = useState<TaskFormValues>(initialValues);
+  const [error, setError] = useState<string | null>(null);
 
   if (!open) return null;
 
@@ -278,4 +271,3 @@ export function TaskFormModal({
     </div>
   );
 }
-

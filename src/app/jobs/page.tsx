@@ -8,7 +8,6 @@ import { CrmJobStatus, CrmPipelineStageId } from "@/types/crm";
 import {
   Search,
   MapPin,
-  Briefcase,
   Building2,
   ArrowRight,
 } from "lucide-react";

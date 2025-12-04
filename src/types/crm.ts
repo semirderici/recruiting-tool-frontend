@@ -1,3 +1,5 @@
+// src/types/crm.ts
+
 export type CrmTaskStatus = "open" | "in_progress" | "completed" | "overdue";
 export type CrmTaskType = "general" | "interview" | "follow_up" | "client_call" | "offer";
 export type CrmTaskPriority = "low" | "medium" | "high";
@@ -118,4 +120,59 @@ export interface CrmCompany {
   updatedAt: string;  // ISO-String
   source?: string;    // z. B. "LinkedIn", "Empfehlung"
   notes?: string;
+}
+
+export type CrmExportType =
+  | "candidate_list"
+  | "job_list"
+  | "matching_report"
+  | "activity_log";
+
+export type CrmExportFormat = "csv" | "pdf" | "xlsx" | "google_sheets";
+
+export type CrmExportStatus = "running" | "completed" | "failed";
+
+export interface CrmExport {
+  id: string;
+  title: string;
+  description?: string;
+  type: CrmExportType;
+  format: CrmExportFormat;
+  status: CrmExportStatus;
+  createdAt: string; // ISO-String
+  finishedAt?: string; // ISO-String
+  createdBy: string; // z. B. "Semir Derici"
+  rowCount?: number;
+  candidateCount?: number;
+  jobCount?: number;
+  scope?: string; // z. B. "Kandidat: Max Mustermann" oder "Job: Senior Frontend Developer"
+}
+
+// --- Settings Types ---
+
+export interface SettingsUserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: "admin" | "recruiter" | "viewer";
+  avatarInitials: string;
+  timezone: string;
+  language: string;
+}
+
+export interface SettingsBranding {
+  productName: string;
+  companyName: string;
+  primaryColor: string;
+  logoUrl?: string;
+  accentColor: string;
+}
+
+export interface SettingsApiKey {
+  id: string;
+  service: string;
+  description: string;
+  status: "active" | "pending" | "error";
+  lastUsed: string;
+  scopes: string[];
 }

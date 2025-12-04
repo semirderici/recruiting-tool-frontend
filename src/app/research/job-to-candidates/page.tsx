@@ -1,261 +1,280 @@
 "use client";
 
-import React, { useState } from "react";
-import { SidebarLayout } from "@/components/SidebarLayout";
-import { CheckCircle, ChevronRight, ArrowLeft } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { SidebarLayout } from "@/components/SidebarLayout";
+import { crmJobs } from "@/data/crmJobs";
+import { crmCandidates } from "@/data/crmCandidates";
+import { computeCandidateJobMatchScore } from "@/utils/matching";
+import { ChevronLeft, Search, RefreshCw, MapPin, User } from "lucide-react";
+import { CrmCandidate } from "@/types/crm";
+
+interface CandidateMatchResult {
+  candidate: CrmCandidate;
+  score: number;
+  sharedKeywords: string[];
+  locationMatch: boolean;
+}
 
 export default function JobToCandidatesPage() {
-  const [step, setStep] = useState(1);
+  const searchParams = useSearchParams();
+  const initialJobId = searchParams?.get("jobId") || "";
+
+  const [activeStep, setActiveStep] = useState<1 | 2>(1);
+  const [selectedJobId, setSelectedJobId] = useState(initialJobId);
+  const [jobText, setJobText] = useState("");
+  const [results, setResults] = useState<CandidateMatchResult[]>([]);
+
+  // Effect to pre-fill text if job is selected
+  useEffect(() => {
+    if (selectedJobId) {
+      const job = crmJobs.find((j) => j.id === selectedJobId);
+      if (job) {
+        // Dummy Job text
+        const text = `
+Titel: ${job.title}
+Firma: ${job.companyName}
+Standort: ${job.location}
+Tags: ${(job.tags || []).join(", ")}
+        `.trim();
+        setJobText(text);
+      }
+    } else {
+      setJobText("");
+    }
+  }, [selectedJobId]);
+
+  const handleSearch = () => {
+    const job = crmJobs.find((j) => j.id === selectedJobId);
+
+    const matches = crmCandidates.map((candidate) => {
+      // If we have a real job, use its data. Otherwise try to construct from text.
+      let matchInput = {
+        location: job?.location || "",
+        tags: job?.tags || [],
+        skills: [] as string[],
+      };
+
+      if (!job && jobText) {
+        const words = jobText
+          .split(/[\s,.\n]+/)
+          .filter((w) => w.length > 2)
+          .slice(0, 20);
+        matchInput = {
+          location: "",
+          tags: words,
+          skills: [],
+        };
+      }
+
+      const { score, sharedKeywords, locationMatch } =
+        computeCandidateJobMatchScore(
+          {
+            location: candidate.location,
+            tags: candidate.tags,
+          },
+          matchInput
+        );
+
+      return {
+        candidate,
+        score,
+        sharedKeywords,
+        locationMatch,
+      };
+    });
+
+    const sorted = matches.sort((a, b) => b.score - a.score);
+    setResults(sorted);
+    setActiveStep(2);
+  };
+
+  const handleReset = () => {
+    setActiveStep(1);
+    setResults([]);
+  };
 
   return (
     <SidebarLayout>
-      <div className="mx-auto max-w-4xl">
-        {/* Header / Breadcrumb */}
+      <div className="mx-auto max-w-7xl">
+        {/* Back Link */}
         <div className="mb-6">
           <Link
             href="/research"
-            className="mb-2 flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-900"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Zurück zur Übersicht
+            <ChevronLeft className="h-4 w-4" />
+            <span>Zurück zur Übersicht</span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Job → Kandidaten Matching
-          </h1>
         </div>
 
-        {/* Stepper */}
-        <div className="mb-10 overflow-x-auto pb-4">
-          <div className="relative flex min-w-[320px] items-center justify-between px-2">
-            <div className="absolute left-0 top-1/2 -z-10 h-0.5 w-full -translate-y-1/2 bg-gray-200" />
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Job → Kandidaten</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Finde passende Kandidaten für ein Jobprofil.
+          </p>
+        </div>
 
-            {/* Step 1 */}
-            <div className="flex flex-col items-center gap-2 bg-gray-50 px-2">
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-colors ${
-                  step >= 1
-                    ? "border-purple-600 bg-purple-600 text-white"
-                    : "border-gray-300 bg-white text-gray-500"
-                }`}
-              >
-                1
-              </div>
-              <span
-                className={`text-xs font-medium ${
-                  step >= 1 ? "text-purple-600" : "text-gray-500"
-                }`}
-              >
-                Eingabe
-              </span>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex flex-col items-center gap-2 bg-gray-50 px-2">
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-colors ${
-                  step >= 2
-                    ? "border-purple-600 bg-purple-600 text-white"
-                    : "border-gray-300 bg-white text-gray-500"
-                }`}
-              >
-                2
-              </div>
-              <span
-                className={`text-xs font-medium ${
-                  step >= 2 ? "text-purple-600" : "text-gray-500"
-                }`}
-              >
-                Ergebnisse
-              </span>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex flex-col items-center gap-2 bg-gray-50 px-2">
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-colors ${
-                  step >= 3
-                    ? "border-purple-600 bg-purple-600 text-white"
-                    : "border-gray-300 bg-white text-gray-500"
-                }`}
-              >
-                3
-              </div>
-              <span
-                className={`text-xs font-medium ${
-                  step >= 3 ? "text-purple-600" : "text-gray-500"
-                }`}
-              >
-                Details
-              </span>
-            </div>
+        {/* Stepper Indicator */}
+        <div className="mb-8 flex items-center gap-4 text-sm font-medium">
+          <div className={`flex items-center gap-2 ${activeStep === 1 ? "text-purple-600" : "text-gray-500"}`}>
+            <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${activeStep === 1 ? "border-purple-600 bg-purple-50" : "border-gray-300"}`}>1</span>
+            Eingabe
+          </div>
+          <div className="h-px w-8 bg-gray-300" />
+          <div className={`flex items-center gap-2 ${activeStep === 2 ? "text-purple-600" : "text-gray-500"}`}>
+            <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${activeStep === 2 ? "border-purple-600 bg-purple-50" : "border-gray-300"}`}>2</span>
+            Trefferliste
           </div>
         </div>
 
-        {/* Content based on step */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
-          {step === 1 && (
-            <div className="space-y-8">
-              <div className="grid gap-8 md:grid-cols-2">
-                {/* Job Description Input */}
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Stellenanzeige hinzufügen
-                  </h3>
-                  <div className="flex flex-1 flex-col">
-                    <textarea
-                      className="block h-64 w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
-                      placeholder="Füge hier die Stellenanzeige ein..."
-                    />
-                    <p className="mt-2 text-xs text-gray-500">
-                      Später: Upload als PDF oder URL
-                    </p>
-                  </div>
-                </div>
-
-                {/* Filters */}
-                <div className="flex flex-col gap-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Filter
-                  </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Erfahrung
-                      </label>
-                      <select className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6">
-                        <option>Junior (0-2 Jahre)</option>
-                        <option>Mid-Level (3-5 Jahre)</option>
-                        <option>Senior (5+ Jahre)</option>
-                        <option>Lead / Manager</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Pflicht-Skills (kommagetrennt)
-                      </label>
-                      <input
-                        type="text"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
-                        placeholder="z. B. React, TypeScript"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Optionale Skills
-                      </label>
-                      <input
-                        type="text"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
-                        placeholder="z. B. Tailwind, AWS"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end border-t border-gray-100 pt-6">
-                <button
-                  onClick={() => setStep(2)}
-                  className="inline-flex items-center gap-2 rounded-md bg-purple-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                >
-                  Matching starten
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-6">
-              <div className="flex flex-col items-center justify-center py-6 text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-50 text-purple-600">
-                  <CheckCircle className="h-8 w-8" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">
-                  Kandidaten gefunden!
-                </h3>
-                <p className="mt-2 text-gray-500">
-                  Hier werden später die besten Kandidaten für diese Stelle
-                  angezeigt.
-                </p>
-              </div>
-
-              {/* Placeholder Candidate List */}
-              <div className="space-y-3">
-                {[
-                  { name: "Max Mustermann", score: 95 },
-                  { name: "Julia Sommer", score: 88 },
-                  { name: "Tim Tester", score: 82 },
-                ].map((candidate, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-4"
+        {activeStep === 1 && (
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 text-lg font-semibold text-gray-900">Job auswählen</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    Bestehender Job (optional)
+                  </label>
+                  <select
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
+                    value={selectedJobId}
+                    onChange={(e) => setSelectedJobId(e.target.value)}
                   >
-                    <div>
-                      <div className="font-semibold text-gray-900">
-                        {candidate.name}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Match-Score: {candidate.score}
-                      </div>
-                    </div>
-                    <div className="h-8 w-24 rounded bg-gray-200"></div>
+                    <option value="">-- Kein Job (nur Text) --</option>
+                    {crmJobs.map((j) => (
+                      <option key={j.id} value={j.id}>
+                        {j.title} ({j.companyName})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {selectedJobId && (
+                  <div className="rounded-md bg-purple-50 p-4 text-sm text-purple-800">
+                    <p className="font-medium">Job geladen:</p>
+                    <ul className="mt-1 list-inside list-disc">
+                      <li>Titel: {crmJobs.find(j => j.id === selectedJobId)?.title}</li>
+                      <li>Firma: {crmJobs.find(j => j.id === selectedJobId)?.companyName}</li>
+                    </ul>
                   </div>
-                ))}
+                )}
               </div>
+            </div>
 
-              <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-between">
+            <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 text-lg font-semibold text-gray-900">Jobtext / Anforderungen</h2>
+              <textarea
+                className="flex-1 block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 sm:text-sm sm:leading-6"
+                rows={10}
+                placeholder="Füge hier die Stellenbeschreibung ein oder wähle links einen Job..."
+                value={jobText}
+                onChange={(e) => setJobText(e.target.value)}
+              />
+              <div className="mt-4 flex justify-end">
                 <button
-                  onClick={() => setStep(1)}
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center justify-center sm:justify-start"
+                  onClick={handleSearch}
+                  className="inline-flex items-center gap-2 rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                 >
-                  Zurück zur Eingabe
-                </button>
-                <button
-                  onClick={() => setStep(3)}
-                  className="inline-flex items-center justify-center gap-2 rounded-md bg-purple-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                >
-                  Details & Aktionen
-                  <ChevronRight className="h-4 w-4" />
+                  <Search className="h-4 w-4" />
+                  Passende Kandidaten suchen
                 </button>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {step === 3 && (
-            <div className="space-y-6 py-8 text-center">
-              <h3 className="text-xl font-bold text-gray-900">
-                Kontakt & Verwaltung
-              </h3>
-              <p className="mx-auto max-w-lg text-gray-500">
-                Hier kannst du später Shortlists erstellen, Kandidaten direkt
-                kontaktieren und den Prozess verwalten.
-              </p>
-
-              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <button className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  Shortlist erstellen (später)
-                </button>
-                <button className="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                  Kontakt vorbereiten (später)
-                </button>
-              </div>
-
-              <div className="mt-8 border-t border-gray-100 pt-6 text-left">
-                <button
-                  onClick={() => setStep(2)}
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  Zurück zu Ergebnissen
-                </button>
-              </div>
+        {activeStep === 2 && (
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                {results.length} Kandidaten gefunden
+              </h2>
+              <button
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Neue Suche
+              </button>
             </div>
-          )}
-        </div>
+
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              <table className="min-w-full divide-y divide-gray-200 text-sm">
+                <thead className="bg-gray-50 text-gray-500">
+                  <tr>
+                    <th className="px-6 py-3 text-left font-medium uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-3 text-left font-medium uppercase tracking-wider">Rolle</th>
+                    <th className="px-6 py-3 text-left font-medium uppercase tracking-wider">Score</th>
+                    <th className="px-6 py-3 text-left font-medium uppercase tracking-wider">Matches</th>
+                    <th className="px-6 py-3 text-right font-medium uppercase tracking-wider">Aktion</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {results.map(({ candidate, score, sharedKeywords, locationMatch }) => (
+                    <tr key={candidate.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600">
+                            <User className="h-4 w-4" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-medium text-gray-900">{candidate.name}</span>
+                            <span className="text-xs text-gray-500">{candidate.status}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        <div className="font-medium">{candidate.role}</div>
+                        <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
+                          <MapPin className="h-3.5 w-3.5 text-gray-400" />
+                          {candidate.location}
+                          {locationMatch && (
+                            <span className="ml-1 text-green-600 font-medium">(Match)</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          score >= 80 ? "bg-green-100 text-green-800" :
+                          score >= 50 ? "bg-yellow-100 text-yellow-800" :
+                          "bg-red-100 text-red-800"
+                        }`}>
+                          {score}%
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-1">
+                          {sharedKeywords.length > 0 ? sharedKeywords.slice(0, 3).map(kw => (
+                            <span key={kw} className="inline-flex items-center rounded-full bg-purple-50 px-2 py-0.5 text-xs text-purple-700 ring-1 ring-inset ring-purple-600/10">
+                              {kw}
+                            </span>
+                          )) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
+                          {sharedKeywords.length > 3 && (
+                            <span className="text-xs text-gray-500">+{sharedKeywords.length - 3}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <Link
+                          href={`/candidates/${candidate.id}`}
+                          className="font-medium text-purple-600 hover:text-purple-800"
+                        >
+                          Kandidat öffnen
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </SidebarLayout>
   );
 }
-
-

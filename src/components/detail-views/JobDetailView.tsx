@@ -9,12 +9,20 @@ import {
   Calendar,
   Clock,
   CheckCircle2,
-  ExternalLink,
   Building2,
 } from "lucide-react";
 
 interface JobDetailViewProps {
   job: Job;
+}
+
+function getDeterministicScoreFromName(name: string): number {
+  let sum = 0;
+  for (const char of name) {
+    sum += char.charCodeAt(0);
+  }
+  // ergibt einen Wert zwischen 60 und 100
+  return 60 + (sum % 41);
 }
 
 export function JobDetailView({ job }: JobDetailViewProps) {
@@ -24,7 +32,7 @@ export function JobDetailView({ job }: JobDetailViewProps) {
   const matchingCandidates = dummyCandidates
     .map((c) => ({
       ...c,
-      matchScore: Math.floor(Math.random() * 40) + 60, // Random score 60-100
+      matchScore: getDeterministicScoreFromName(c.name),
     }))
     .sort((a, b) => b.matchScore - a.matchScore)
     .slice(0, 5);

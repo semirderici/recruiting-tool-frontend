@@ -6,13 +6,9 @@ import { dummyJobs } from "@/data/jobs";
 import Link from "next/link";
 import {
   Users,
-  MapPin,
-  Calendar,
-  Building2,
   Mail,
   Phone,
   Clock,
-  ExternalLink,
 } from "lucide-react";
 
 interface CompanyDetailViewProps {

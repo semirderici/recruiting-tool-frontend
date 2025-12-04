@@ -19,6 +19,8 @@ import {
   CheckSquare,
   CalendarClock,
   Activity,
+  KanbanSquare,
+  BarChart3,
 } from "lucide-react";
 
 interface SidebarLayoutProps {
@@ -36,6 +38,8 @@ const navItems = [
   { name: "Exporte", icon: Download, href: "/exporte" },
   { name: "Aufgaben", icon: CheckSquare, href: "/crm/tasks" },
   { name: "Interviews", icon: CalendarClock, href: "/crm/interviews" },
+  { name: "Pipeline", icon: KanbanSquare, href: "/crm/pipeline" },
+  { name: "Reporting", icon: BarChart3, href: "/crm/reporting" },
   { name: "Aktivitäten", icon: Activity, href: "/crm/activities" },
   { name: "Einstellungen", icon: Settings, href: "/einstellungen" },
 ];

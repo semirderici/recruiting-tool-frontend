@@ -238,7 +238,7 @@ export default function DashboardPage() {
               Offene Aufgaben
             </div>
             <div className="text-xs text-gray-500">
-              Inkl. "In Arbeit"
+              Inkl. &quot;In Arbeit&quot;
             </div>
             <div className="mt-auto pt-4">
               <Link

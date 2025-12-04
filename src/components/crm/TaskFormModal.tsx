@@ -53,6 +53,7 @@ export function TaskFormModal({
       });
       setError(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialType]);
 
   if (!open) return null;
